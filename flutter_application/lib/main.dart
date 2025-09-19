@@ -1,6 +1,9 @@
-import 'package:english_words/english_words.dart';
+// import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_application/pages/home_page.dart';
+import 'package:flutter_application/pages/maps_page.dart';
+// import 'package:provider/provider.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -11,84 +14,85 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Campus Connect',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 80, 80, 80)),
-        ),
-        home: MyHomePage(),
-      ),
+    return MaterialApp(
+      // debugShowCheckedModeBanner: false,
+      theme:ThemeData(primarySwatch: Colors.cyan),
+      home: const HomePage(),
+      initialRoute: '/homepage',
+      routes: {
+        '/homepage':(context) => HomePage(),
+        '/mapspage':(context) => MapsPage(),
+
+      },
     );
   }
 }
 
-class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-  }
-}
+// class MyAppState extends ChangeNotifier {
+//   var current = WordPair.random();
+//   void getNext() {
+//     current = WordPair.random();
+//     notifyListeners();
+//   }
+// }
 
-// ...
+// // ...
 
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current;
+// class MyHomePage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     var appState = context.watch<MyAppState>();
+//     var pair = appState.current;
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BigCard(pair: pair),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-              },
-              child: Text('Sign in with google!'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//     return Scaffold(
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             BigCard(pair: pair),
+//             SizedBox(height: 10),
+//             ElevatedButton(
+//               onPressed: () {
+//                 appState.getNext();
+//               },
+//               child: Text('Sign in with google!'),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-// ...
+// // ...
 
-class BigCard extends StatelessWidget {
-  const BigCard({super.key, required this.pair});
+// class BigCard extends StatelessWidget {
+//   const BigCard({super.key, required this.pair});
 
-  final WordPair pair;
+//   final WordPair pair;
 
  
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     final style = theme.textTheme.displayMedium!.copyWith(
+//       color: theme.colorScheme.onPrimary,
+//     );
 
-    return Card(
-      color: theme.colorScheme.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+//     return Card(
+//       color: theme.colorScheme.primary,
+//       child: Padding(
+//         padding: const EdgeInsets.all(20),
 
-        // ↓ Make the following change.
-        child: Text(
-          pair.asLowerCase,
-          style: style,
-          semanticsLabel: "${pair.first} ${pair.second}",
-        ),
-      ),
-    );
-  }
-}
+//         // ↓ Make the following change.
+//         child: Text(
+//           pair.asLowerCase,
+//           style: style,
+//           semanticsLabel: "${pair.first} ${pair.second}",
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-// ...
+// // ...
