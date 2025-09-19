@@ -6,7 +6,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Welcome to Connect")),
+      appBar: AppBar(title: const Text("Welcome to Campus Connect")),
       body: Center(
         child: ElevatedButton(
           child: const Text("Maps"),
