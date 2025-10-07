@@ -1,33 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
-
-  // Reference to your Firestore collection
-  final CollectionReference users = FirebaseFirestore.instance.collection('users');
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Login")),
       body: Padding(
-        padding: const EdgeInsets.all(20.0), 
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/Logo.png',
-              height: 150,
-            ),
-            const SizedBox(height: 30),
-
+            Image.asset('assets/Logo.png', height: 150),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _usernameController,
               decoration: const InputDecoration(
@@ -35,25 +30,24 @@ class _LoginPageState extends State<LoginPage> {
                 labelText: 'Enter your username',
               ),
             ),
-            const SizedBox(height: 20),
-
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () async {
-                final username = _usernameController.text;
-
+                final username = _usernameController.text.trim();
                 if (username.isNotEmpty) {
-                  // Add username to Firestore (trial)
                   await users.add({
                     'username': username,
                     'createdAt': FieldValue.serverTimestamp(),
                   });
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Username "$username" added to Firestore!')),
-                  );
+                  _usernameController.clear();
 
-                  // Navigate to home page (optional)
-                  Navigator.pushNamed(context, '/homepage');
+                  // ✅ Replace the login page so user can't go back
+                  Navigator.pushReplacementNamed(
+                    context,
+                    '/home_page',
+                    arguments: username,
+                  );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Please enter a username')),
