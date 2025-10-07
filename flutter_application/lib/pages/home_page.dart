@@ -16,7 +16,6 @@ class _HomePageState extends State<HomePage> {
     final String? username =
         ModalRoute.of(context)?.settings.arguments as String?;
 
-    // ✅ 4 pages inside the same Scaffold
     final List<Widget> pages = <Widget>[
       const Center(
         child: Text(
@@ -43,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
         automaticallyImplyLeading:
-            false, // ✅ removes all back arrows from app bar
+            false, 
       ),
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(

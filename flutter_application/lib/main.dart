@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.cyan),
 
-      // ✅ start here directly — no home:
       initialRoute: '/loginpage',
 
       routes: {

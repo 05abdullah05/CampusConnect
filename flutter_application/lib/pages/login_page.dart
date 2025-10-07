@@ -42,7 +42,6 @@ class _LoginPageState extends State<LoginPage> {
 
                   _usernameController.clear();
 
-                  // ✅ Replace the login page so user can't go back
                   Navigator.pushReplacementNamed(
                     context,
                     '/home_page',
