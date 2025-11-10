@@ -11,14 +11,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  final Color darkBlue = const Color(0xFF001F3F); // Navy tone
+  final Color darkBlue = const Color(0xFF001F3F);
 
   @override
   Widget build(BuildContext context) {
-    final String? username =
+    final String? userId =
         ModalRoute.of(context)?.settings.arguments as String?;
 
-    // Home page UI (Figma-style)
     final homePage = SingleChildScrollView(
       // backgroundColor: Colors.white,
       child: Column(
@@ -26,7 +25,6 @@ class _HomePageState extends State<HomePage> {
         children: [
           const SizedBox(height: 30),
 
-          // Welcome message
           Center(
             child: Text(
               "Welcome to Campus Connect",
@@ -41,7 +39,7 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 25),
 
-          // --- Recent activity section ---
+          // Recent activity section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -62,7 +60,7 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 15),
 
-          // Fake user list
+          // User list
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -74,7 +72,9 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundImage: const AssetImage('assets/profile_sample.png'),
+                        backgroundImage: const AssetImage(
+                          'assets/profile_sample.png',
+                        ),
                       ),
                       const SizedBox(height: 5),
                       Text(
@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 25),
 
-          // --- View Campus Map section ---
+          // View Campus Map section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 15),
 
-          // Campus Map Image (Clickable)
+          // Campus Map Image
           GestureDetector(
             onTap: () {
               setState(() {
@@ -140,13 +140,11 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-
-    // --- Main page views (based on bottom nav) ---
     final List<Widget> pages = <Widget>[
       homePage,
       const Center(child: Text("Map Page Placeholder")),
       const Center(child: Text("Notifications Placeholder")),
-      ProfilePage(username: username),
+      ProfilePage(userId: userId),
     ];
 
     return Scaffold(
@@ -156,10 +154,10 @@ class _HomePageState extends State<HomePage> {
           _selectedIndex == 0
               ? "Campus Connect"
               : _selectedIndex == 1
-                  ? "Map"
-                  : _selectedIndex == 2
-                      ? "Notifications"
-                      : "Profile",
+              ? "Map"
+              : _selectedIndex == 2
+              ? "Notifications"
+              : "Profile",
           style: TextStyle(color: darkBlue, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
@@ -181,7 +179,9 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.notifications), label: "Notifications"),
+            icon: Icon(Icons.notifications),
+            label: "Notifications",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),

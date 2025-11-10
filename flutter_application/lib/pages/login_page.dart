@@ -11,16 +11,18 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final CollectionReference users = FirebaseFirestore.instance.collection('users');
+  final CollectionReference users = FirebaseFirestore.instance.collection(
+    'users',
+  );
 
-  final Color darkBlue = const Color(0xFF001F3F); 
+  final Color darkBlue = const Color(0xFF001F3F);
 
   @override
   Widget build(BuildContext context) {
-    final double fieldWidth = MediaQuery.of(context).size.width * 0.85; 
+    final double fieldWidth = MediaQuery.of(context).size.width * 0.85;
 
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(
         // title: const Text("Login"),
         backgroundColor: Colors.white,
@@ -38,10 +40,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 width: fieldWidth,
                 height: 120,
-                child: Image.asset(
-                  'assets/Logo.png',
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset('assets/Logo.png', fit: BoxFit.contain),
               ),
               const SizedBox(height: 30),
 
@@ -55,7 +54,10 @@ class _LoginPageState extends State<LoginPage> {
                     labelStyle: TextStyle(color: darkBlue),
                     border: const OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.cyan, width: 2.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
+                        width: 2.0,
+                      ),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
@@ -74,7 +76,10 @@ class _LoginPageState extends State<LoginPage> {
                     labelStyle: TextStyle(color: darkBlue),
                     border: const OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.cyan, width: 2.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
+                        width: 2.0,
+                      ),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
@@ -82,32 +87,39 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 25),
 
-              // Login button 
+              // Login button
               SizedBox(
                 width: fieldWidth,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
                     final username = _usernameController.text.trim();
+
                     if (username.isNotEmpty) {
-                      await users.add({
+                      //Add user to Firestore and get the document reference
+                      final docRef = await users.add({
                         'username': username,
                         'createdAt': FieldValue.serverTimestamp(),
                       });
+
                       _usernameController.clear();
                       _passwordController.clear();
 
+                      // Pass the Firestore doc ID to home-page
                       Navigator.pushReplacementNamed(
                         context,
                         '/home_page',
-                        arguments: username,
+                        arguments: docRef.id,
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please enter a username')),
+                        const SnackBar(
+                          content: Text('Please enter a username'),
+                        ),
                       );
                     }
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.cyan,
                     foregroundColor: darkBlue,
@@ -117,10 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: const Text(
                     "Login",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
               ),
