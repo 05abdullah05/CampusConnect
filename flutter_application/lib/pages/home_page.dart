@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/pages/maps_page.dart';
 import 'profile_page.dart';
+import 'notification_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,17 +11,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Controls which tab is selected in BottomNavigationBar
   int _selectedIndex = 0;
 
   final Color darkBlue = const Color(0xFF001F3F);
 
   @override
   Widget build(BuildContext context) {
-    final String? userId =
-        ModalRoute.of(context)?.settings.arguments as String?;
+    // UserId is passed once and reused across (Profile, Notifications)
+    final String? userId =ModalRoute.of(context)?.settings.arguments as String?;
 
     final homePage = SingleChildScrollView(
-      // backgroundColor: Colors.white,
+      // ScrollView prevents overflow on smaller screens
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,7 +32,7 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               "Welcome to Campus Connect",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 35,
                 fontWeight: FontWeight.bold,
                 color: darkBlue,
               ),
@@ -37,9 +40,25 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
 
-          // Recent activity section
+        
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/LIU.jpg',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 200,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 45),
+
+          // Recent Activity Feed
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -53,28 +72,28 @@ class _HomePageState extends State<HomePage> {
                     color: darkBlue,
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: Colors.grey),
+                const Icon(
+                  Icons.chevron_right,
+                  color: Color.fromARGB(255, 0, 217, 255),
+                ),
               ],
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 18),
 
-          // User list
+          // Horizontal list of recent users (placeholder data)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: List.generate(4, (index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: Column(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 30,
-                        backgroundImage: const AssetImage(
-                          'assets/profile_sample.png',
-                        ),
+                        backgroundImage: AssetImage('assets/prof1.jpg'),
                       ),
                       const SizedBox(height: 5),
                       Text(
@@ -92,9 +111,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 40),
 
-          // View Campus Map section
+          // Map Preview
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -108,18 +127,21 @@ class _HomePageState extends State<HomePage> {
                     color: darkBlue,
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: Colors.grey),
+                const Icon(
+                  Icons.chevron_right,
+                  color: Color.fromARGB(255, 0, 217, 255),
+                ),
               ],
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 18),
 
-          // Campus Map Image
+          // Tapping image switches tab instead of pushing a new route
           GestureDetector(
             onTap: () {
               setState(() {
-                _selectedIndex = 1; // Go to Map page
+                _selectedIndex = 1; // Navigate to Maps tab
               });
             },
             child: Padding(
@@ -136,44 +158,41 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          const SizedBox(height: 30),
+          // Bottom padding so content doesn't collide with navigation bar
+          const SizedBox(height: 90),
         ],
       ),
     );
+
+    // Pages are kept in memory and switched using index (efficient tab navigation)
     final List<Widget> pages = <Widget>[
       homePage,
-      const Center(child: Text("Map Page Placeholder")),
-      const Center(child: Text("Notifications Placeholder")),
-      ProfilePage(userId: userId),
+      const MapsPage(),
+      NotificationPage(userId: userId ?? ''),
+      ProfilePage(userId: userId ?? ''),
     ];
 
     return Scaffold(
       backgroundColor: Colors.white,
+
       appBar: AppBar(
-        title: Text(
-          _selectedIndex == 0
-              ? "Campus Connect"
-              : _selectedIndex == 1
-              ? "Map"
-              : _selectedIndex == 2
-              ? "Notifications"
-              : "Profile",
-          style: TextStyle(color: darkBlue, fontWeight: FontWeight.bold),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: darkBlue),
       ),
+
+      // Body updates based on selected bottom navigation index
       body: pages[_selectedIndex],
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.cyan,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          setState(() => _selectedIndex = index);
+          setState(() => _selectedIndex = index); // Triggers UI rebuild
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),

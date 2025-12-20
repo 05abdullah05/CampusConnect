@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/pages/home_page.dart';
 import 'package:flutter_application/pages/maps_page.dart';
 import 'package:flutter_application/pages/login_page.dart';
-import 'package:flutter_application/pages/profile_page.dart';
-import 'package:flutter_application/pages/notification_page.dart';
+//import 'package:flutter_application/pages/profile_page.dart';
+//import 'package:flutter_application/pages/notification_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // Bindings initialization for async operations
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.cyan),
 
       initialRoute: '/loginpage',
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
         '/loginpage': (context) => const LoginPage(),
         '/home_page': (context) => const HomePage(),
         '/mapspage': (context) => const MapsPage(),
-        '/profilepage': (context) => const ProfilePage(),
-        '/notificationpage': (context) => const NotificationPage(),
+        // '/profilepage': (context) => const ProfilePage(userId: ''),
+        // '/notificationpage': (context) => const NotificationPage(),
       },
     );
   }

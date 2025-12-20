@@ -11,11 +11,80 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final CollectionReference users = FirebaseFirestore.instance.collection(
-    'users',
-  );
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
 
   final Color darkBlue = const Color(0xFF001F3F);
+
+  // Error messages
+  String? usernameError;
+  String? passwordError;
+
+  // Validation functions
+  bool validateUsername(String username) {
+    final RegExp usernameRegex =
+        RegExp(r'^(?=.*[0-9])[A-Za-z0-9]{5,}$'); 
+    return usernameRegex.hasMatch(username);
+  }
+
+  bool validatePassword(String password) {
+    final RegExp passwordRegex = RegExp(
+        r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%^&*]).{8,}$'); 
+    return passwordRegex.hasMatch(password);
+  }
+
+  Future<void> _loginOrRegister() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    setState(() {
+      usernameError = validateUsername(username)
+          ? null
+          : "Username must be 5+ chars, contain a number and no special symbols.";
+
+      passwordError = validatePassword(password)
+          ? null
+          : "Password must be 8+ chars, include uppercase, number & symbol.";
+    });
+
+    // Stop login if there are errors
+    if (usernameError != null || passwordError != null) return;
+
+    // Check if user exists
+    final existingUser =
+        await users.where('username', isEqualTo: username).limit(1).get();
+
+    if (existingUser.docs.isNotEmpty) {
+      final userData =
+          existingUser.docs.first.data() as Map<String, dynamic>;
+      final storedPassword = userData['password'];
+
+      if (storedPassword == password) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/home_page',
+          arguments: existingUser.docs.first.id,
+        );
+      } else {
+        setState(() {
+          passwordError = "Incorrect password.";
+        });
+      }
+    } else {
+      // Create new user
+      final newDoc = await users.add({
+        'username': username,
+        'password': password,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      Navigator.pushReplacementNamed(
+        context,
+        '/home_page',
+        arguments: newDoc.id,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        // title: const Text("Login"),
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -33,106 +101,115 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
                 width: fieldWidth,
-                height: 120,
-                child: Image.asset('assets/Logo.png', fit: BoxFit.contain),
+                height: 280,
+                child: Image.asset('assets/Logo.png'),
               ),
               const SizedBox(height: 30),
 
-              // Username field
+              // Username FIELD
               SizedBox(
                 width: fieldWidth,
-                child: TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Enter your username',
-                    labelStyle: TextStyle(color: darkBlue),
-                    border: const OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Colors.cyan,
-                        width: 2.0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        labelText: 'Enter your username',
+                        labelStyle: TextStyle(color: darkBlue),
+                        border: const OutlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Colors.cyan, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(8.0),
+                      onChanged: (_) {
+                        setState(() {
+                          usernameError = null;
+                        });
+                      },
                     ),
-                  ),
+                    if (usernameError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        child: Text(
+                          usernameError!,
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 13),
+                        ),
+                      ),
+                  ],
                 ),
               ),
+
               const SizedBox(height: 15),
 
-              // Password field
+              // Password FIELD
               SizedBox(
                 width: fieldWidth,
-                child: TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Enter your password',
-                    labelStyle: TextStyle(color: darkBlue),
-                    border: const OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Colors.cyan,
-                        width: 2.0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Enter your password',
+                        labelStyle: TextStyle(color: darkBlue),
+                        border: const OutlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Colors.cyan, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(8.0),
+                      onChanged: (_) {
+                        setState(() {
+                          passwordError = null;
+                        });
+                      },
                     ),
-                  ),
+                    if (passwordError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        child: Text(
+                          passwordError!,
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 13),
+                        ),
+                      ),
+                  ],
                 ),
               ),
+
               const SizedBox(height: 25),
 
-              // Login button
+              // Login Button
               SizedBox(
                 width: fieldWidth,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    final username = _usernameController.text.trim();
-
-                    if (username.isNotEmpty) {
-                      //Add user to Firestore and get the document reference
-                      final docRef = await users.add({
-                        'username': username,
-                        'createdAt': FieldValue.serverTimestamp(),
-                      });
-
-                      _usernameController.clear();
-                      _passwordController.clear();
-
-                      // Pass the Firestore doc ID to home-page
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/home_page',
-                        arguments: docRef.id,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a username'),
-                        ),
-                      );
-                    }
-                  },
-
+                  onPressed: _loginOrRegister,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.cyan,
-                    foregroundColor: darkBlue,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   child: const Text(
                     "Login",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),
